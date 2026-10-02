@@ -19,7 +19,7 @@ The workshop is divided into three connected parts:
    - Generate enrichment plots and pathway tables.
 
 2. **GenABEL**
-   - Review the original Neibergs Lab GSEA-SNP permutation framework.
+   - Use GenABEL to generate phenotype-permuted SNP statistics.
    - Prepare the same genotype/phenotype data used in the GWAA tutorial.
    - Create an IBS matrix.
    - Fit a polygenic model.
@@ -61,7 +61,7 @@ GWAA genotype + phenotype data
  Enriched pathways + leading-edge genes
 ```
 
-The **GenABEL section** shows how the original Neibergs Lab workflow generated phenotype-permuted SNP statistics. The current hands-on GSEA section uses `fgsea` for pathway enrichment.
+The **GenABEL section** demonstrates how phenotype-permuted SNP statistics can be generated, while the hands-on enrichment section uses `fgsea` for pathway analysis.
 
 ---
 
@@ -147,11 +147,11 @@ Your structure should now look like:
 ---
 
 <details>
-<summary><strong>Instructor preparation: shared GSEA resources</strong></summary>
+<summary><strong>Shared GSEA resources</strong></summary>
 
 <br>
 
-For the complete real-data exercise, the workshop server should contain instructor-provided resources similar to:
+For the complete real-data exercise, the workshop server contains the following shared resources:
 
 ```text
 /workshop/data/gsea/
@@ -178,7 +178,7 @@ A SNP may appear more than once if it maps to more than one gene.
 
 This contains the biological gene sets used for GSEA in standard GMT format.
 
-The original Neibergs Lab tutorial used pathway information assembled from:
+The pathway collection used in this tutorial includes gene sets from:
 
 - BioCarta
 - Gene Ontology
@@ -186,7 +186,7 @@ The original Neibergs Lab tutorial used pathway information assembled from:
 - PANTHER
 - Reactome
 
-The exact pathway collection can be updated by the instructor, but the gene identifiers in the pathway file must match the identifiers in the SNP-to-gene mapping file.
+If the pathway collection is updated, the gene identifiers in the pathway file must match the identifiers in the SNP-to-gene mapping file.
 
 ### Optional annotation file
 
@@ -403,7 +403,7 @@ head(fgsea_results, 10)
 | `size` | Number of pathway genes represented in the ranked list |
 | `leadingEdge` | Genes contributing most strongly to the enrichment signal |
 
-> 💡 The broad `minSize = 1` and `maxSize = 5000` settings are used here to match the original classroom example. In a research analysis, biologically sensible pathway-size filters such as 10–500 or 15–500 are often preferable.
+> 💡 The broad `minSize = 1` and `maxSize = 5000` settings are used here for the classroom example. In a research analysis, biologically sensible pathway-size filters such as 10–500 or 15–500 are often preferable.
 
 ---
 
@@ -555,9 +555,9 @@ Answer these before continuing:
 
 # Part 2 — GenABEL
 
-## Why are we learning GenABEL?
+## Why are we using GenABEL?
 
-The original Neibergs Lab GSEA-SNP pipeline used **GenABEL** to generate phenotype-permuted genome-wide association statistics.
+In this tutorial, **GenABEL** is used to generate phenotype-permuted genome-wide association statistics.
 
 The major steps were:
 
@@ -577,9 +577,9 @@ Phenotype permutations
 Permuted SNP statistics
 ```
 
-These permutation statistics were then used by the lab's original GSEA-SNP command-line workflow.
+These permutation statistics provide an empirical null distribution of SNP-level association signals.
 
-The current workshop uses `fgsea` for the final enrichment analysis, so the large GenABEL permutation files are **not required as input to `fgsea`**. We include this section so that you understand the original lab methodology and how phenotype permutations were generated.
+The workshop uses `fgsea` for the final enrichment analysis, so the GenABEL permutation files are **not direct inputs to `fgsea`**. This section is included to show how phenotype permutations are generated and why an empirical null distribution can be useful in GSEA-SNP analyses.
 
 > ⚠️ `GenABEL` is an older package. The workshop server should provide a compatible R environment. Do not spend workshop time trying to install GenABEL into a modern R environment unless instructed to do so.
 
@@ -663,7 +663,7 @@ colnames(fam) <- c(
 genabel_pheno <- data.frame(
     id = fam$IID,
 
-    # GenABEL convention used in the original lab tutorial:
+    # GenABEL sex coding convention used here:
     # female = 0, male = 1
     sex = ifelse(
         fam$Sex_PLINK == 1, 1,
@@ -721,7 +721,7 @@ id    sex    status
 
 ## 11. Start GenABEL
 
-Start the R environment provided for GenABEL by the instructor, then:
+Start R, then load GenABEL:
 
 ```r
 library(GenABEL)
@@ -743,7 +743,7 @@ setwd("~/workshop/gsea/genabel")
 
 ## 12. Save the marker names
 
-The original Neibergs Lab workflow created a marker-name file as a safeguard so the permutation statistics could later be matched back to the correct SNP.
+Create a marker-name file so the permutation statistics can always be matched back to the correct SNP.
 
 ```r
 marker_map <- read.table(
@@ -831,7 +831,7 @@ If they do not, stop and determine where the mismatch occurred before continuing
 
 ## 15. Create the IBS matrix
 
-The original GSEA-SNP workflow accounted for genomic similarity among animals using an **identity-by-state (IBS)** matrix.
+Account for genomic similarity among animals using an **identity-by-state (IBS)** matrix.
 
 ```r
 srd_gkin <- ibs(
@@ -873,7 +873,7 @@ poly_srd <- polygenic(
 )
 ```
 
-The original lab permutation workflow used the environmental residuals from the polygenic model:
+Use the environmental residuals from the polygenic model:
 
 ```r
 newtrait <- as.numeric(
@@ -892,13 +892,13 @@ length(newtrait)
 
 These residuals represent the portion of the phenotype remaining after the polygenic component has been accounted for.
 
-They were used in the original Neibergs Lab workflow to create phenotype permutations while preserving the genotype structure.
+These residuals are used to generate phenotype permutations after the polygenic component has been accounted for. Shuffling the residuals breaks the phenotype-genotype correspondence while leaving the genotype data and relatedness structure unchanged.
 
 ---
 
 ## 17. Demonstrate phenotype permutations
 
-The old tutorial used a large permutation analysis:
+A full permutation analysis can use a much larger number of permutations:
 
 ```text
 1000 permutations per file
@@ -1012,11 +1012,11 @@ genabel_permutation_demo.tsv
 ---
 
 <details>
-<summary><strong>What did the original full GenABEL workflow do?</strong></summary>
+<summary><strong>What does a full GenABEL permutation analysis look like?</strong></summary>
 
 <br>
 
-The original Neibergs Lab tutorial generated much larger null distributions:
+A full analysis can generate much larger null distributions, for example:
 
 ```r
 n.perms <- 1000
@@ -1027,7 +1027,7 @@ Each permutation randomized the polygenic environmental residual and reran the S
 
 The resulting chi-square statistics represented SNP association signals expected when the phenotype-genotype relationship had been broken by permutation.
 
-The historical GSEA-SNP command-line pipeline then compared the observed pathway enrichment against this empirical null distribution.
+The resulting empirical null distribution can then be used to compare the observed pathway enrichment against what is expected after permutation.
 
 The classroom demonstration uses only 10 permutations because the purpose here is to understand the logic rather than reproduce a computationally expensive production run.
 
@@ -1079,7 +1079,7 @@ Check:
 ls -lh gwas_additive.assoc.logistic
 ```
 
-> 💡 If the instructor chooses a different covariate-adjusted additive model, change only the source file above. For example, `gwas_sire_ADD.assoc.logistic` could be linked instead. The downstream GSEA workflow remains the same.
+> 💡 If you want to use a different covariate-adjusted additive model, change only the source file above. For example, `gwas_sire_ADD.assoc.logistic` can be linked instead. The downstream GSEA workflow remains the same.
 
 ---
 
@@ -1193,7 +1193,7 @@ head observed_additive_snp_chi2.tsv
 
 ### Why chi-square?
 
-The original Neibergs Lab GSEA-SNP workflow converted additive GWAA p-values to 1-degree-of-freedom chi-square statistics.
+For this tutorial, additive GWAA p-values are converted to 1-degree-of-freedom chi-square statistics.
 
 This produces an **unsigned association-strength statistic**:
 
@@ -1205,7 +1205,7 @@ larger chi-square = stronger SNP-level evidence
 
 ## 21. Map SNPs to genes
 
-For the workshop, use the instructor-provided SNP-to-gene mapping file:
+For the workshop, use the shared SNP-to-gene mapping file:
 
 ```text
 /workshop/data/gsea/srd_snp_gene_map.tsv
@@ -1236,7 +1236,7 @@ This is essential because GSEA evaluates the distribution of association evidenc
 
 <br>
 
-The original Neibergs Lab tutorial expanded gene coordinates by an analysis-specific genomic window based on estimated haplotype-block size and assigned SNPs falling inside those regions to genes.
+The SNP-to-gene mapping can be created by expanding gene coordinates by an analysis-specific genomic window and assigning SNPs that fall inside those regions to genes.
 
 A modern implementation can perform the same overlap operation using genomic-range software such as `GenomicRanges`.
 
@@ -1380,7 +1380,7 @@ Genes represented by many SNPs have more opportunities to contain an extreme ass
 
 This is a potential **gene-size/SNP-density bias** when the maximum SNP statistic is used to represent a gene.
 
-The historical GSEA-SNP permutation framework helps account for properties of the observed SNP structure through empirical permutation. In this workshop, the simplified `fgsea` analysis is intended to teach the pathway-enrichment workflow and should be interpreted with this limitation in mind.
+Permutation-based GSEA-SNP approaches can help account for properties of the observed SNP structure through empirical permutation. In this workshop, the simplified `fgsea` analysis is intended to teach the pathway-enrichment workflow and should be interpreted with this limitation in mind.
 
 </details>
 
@@ -1775,7 +1775,7 @@ results[
 
 Do any of the leading-edge genes contain or lie near SNPs that were among the strongest signals in your GWAA?
 
-That comparison connects the pathway-level result back to the original Manhattan plot.
+That comparison connects the pathway-level result back to the Manhattan plot.
 
 ---
 
@@ -1804,7 +1804,7 @@ TOP_SNP_P
 N_MAPPED_SNPS
 ```
 
-Now find the SNP in the original additive GWAA:
+Now find the SNP in the additive GWAA:
 
 ```bash
 grep -w "TOP_SNP_NAME" \
@@ -1820,7 +1820,7 @@ Leading-edge gene
    ↓
 Top SNP assigned to gene
    ↓
-Original GWAA association
+GWAA association
 ```
 
 That connection is important when biologically interpreting GSEA results.
@@ -2002,7 +2002,7 @@ If the overlap is very small, the SNP-to-gene mapping file does not correspond t
 
 Do **not** install random versions of GenABEL during the workshop.
 
-GenABEL is an older package and may require the instructor-provided R environment.
+GenABEL is an older package, but it is already configured on the workshop server.
 
 Confirm:
 
@@ -2016,7 +2016,7 @@ and:
 .libPaths()
 ```
 
-Then ask the instructor which GenABEL environment should be used.
+If `library(GenABEL)` still fails, stop here and check the workshop R setup before continuing.
 
 </details>
 
@@ -2086,4 +2086,4 @@ to:
 biological pathways and leading-edge genes
 ```
 
-while understanding how the original GenABEL permutation workflow relates to the updated `fgsea` analysis.
+while understanding how phenotype permutation with GenABEL relates to pathway enrichment with `fgsea`.
