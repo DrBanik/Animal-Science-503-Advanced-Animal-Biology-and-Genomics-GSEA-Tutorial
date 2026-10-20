@@ -2,7 +2,7 @@
 
 **Start here.** The original tutorial has been split so we can finish the essential `fgsea` exercise during class and leave the longer GenABEL/GWAA-to-GSEA project for independent exploration.
 
-> **Acknowledgment:** Updated workshop adaptation of the **Neibergs Lab GSEA-SNP Tutorial**, originally written by **Tori Kelson and Allison Herrick**. The original two-part GenABEL/GSEA-SNP workflow, file-preparation logic, permutation strategy, and pathway-analysis framework have been preserved in the optional project.
+> **Acknowledgment:** Updated workshop adaptation of the **Neibergs Lab GSEA-SNP Tutorial**, originally written by **Tori Kelson and Allison Herrick**. 
 
 ## Which file should I use?
 
