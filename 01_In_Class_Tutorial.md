@@ -2,7 +2,7 @@
 
 This tutorial continues directly from the **GWAA workshop tutorial**. You will first use the built-in `fgsea` example data to learn the mechanics of gene set enrichment analysis, then connect those concepts to the bovine GWAA dataset used in the workshop.
 
-> **Acknowledgment:** This tutorial is an updated workshop adaptation of the **Neibergs Lab GSEA-SNP Tutorial**, originally written by **Tori Kelson and Allison Herrick**. Their tutorial established the two-part GenABEL/GSEA-SNP workflow, file-preparation logic, permutation strategy, and pathway-analysis framework used as the foundation for this updated version.
+> **Acknowledgment:** This tutorial is an updated workshop adaptation of the **Neibergs Lab GSEA-SNP Tutorial**, originally written by **Tori Kelson and Allison Herrick**. 
 
 <sub>*For shorter commands, it is better to type the command manually rather than copying it directly. This helps you become more comfortable working in Bash and R.*</sub>
 
