@@ -409,11 +409,11 @@ Identify strongly enriched pathways:
 ```r
 topPathwaysUp <- fgsea_results[
     ES > 0
-][head(order(pval), n = 5), pathway]
+][head(order(pval), n = 10), pathway]
 
 topPathwaysDown <- fgsea_results[
     ES < 0
-][head(order(pval), n = 5), pathway]
+][head(order(pval), n = 10), pathway]
 
 topPathways <- c(
     topPathwaysUp,
@@ -437,7 +437,7 @@ Save the table plot:
 ```r
 png(
     "fgsea_top_pathways.png",
-    width = 2400,
+    width = 4800,
     height = 1800,
     res = 300
 )
